@@ -153,5 +153,78 @@ $("#remove-tasks").on("click", function () {
   saveTasks();
 });
 
+//sortable
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  activate: function(event) {
+    // console.log("activate", this);
+  },
+  deactivate: function(event) {
+    // console.log("deactivate", this);
+  },  
+  over: function(event) {
+    // console.log("over", event.target);
+  },
+  out: function(event) {
+    // console.log("out", event.target);
+  },
+  update: function(event) {
+    //aray to store the task data in 
+    var tempArr = [];
+
+    //loop over current set of children in sortable list
+    $(this).children().each(function() {
+      // console.log($(this));
+      var text = $(this)
+      .find("p")
+      .text()
+      .trim();
+
+      var date = $(this)
+      .find("span")
+      .text()
+      .trim();
+
+      //add task data to temp array as an object
+      tempArr.push({
+        text: text,
+        date: date
+      });
+    });
+    console.log(tempArr)
+
+    // trim down children's/list's ID to match object property
+    //$(this) refers to [ul] or $(".card .list-group") 
+    // console.log($(this));
+
+    var arrName = $(this)
+      .attr("id")
+      .replace("list-", "");
+      console.log(arrName)
+
+      //update array on tasks object and save
+      //update function runs for all children within one parent(ul) at a time. therefore tempArr is showing object for arrName only 
+      //calling key(arrName ex: toDo) of an object(tasks) 
+      tasks[arrName] = tempArr;
+      saveTasks();
+  }
+});
+
+//trash
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event, ui) {
+    ui.draggable.remove();
+    console.log("over");
+  },
+  out: function(event, ui) {
+    console.log("out");
+  }
+})
+
 // load tasks for the first time
 loadTasks();
