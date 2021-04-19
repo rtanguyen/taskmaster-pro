@@ -1,5 +1,4 @@
 var tasks = {};
-
 var createTask = function (taskText, taskDate, taskList) {
   // create elements that make up a task item
   var taskLi = $("<li>").addClass("list-group-item");
@@ -170,12 +169,12 @@ var auditTask = function(taskEl) {
     // get date from task element
     var date = $(taskEl).find("span").text().trim();
     // ensure it worked
-    console.log(date); 
+    // console.log(date); 
   
     // convert to moment object at 5:00pm
     var time = moment(date, "L").set("hour", 17);
     // this should print out an object for the value of the date variable, but at 5:00pm of that date
-    console.log(time);
+    // console.log(time);
     // remove any old classes from element
     $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
 
@@ -186,6 +185,7 @@ var auditTask = function(taskEl) {
     else if (Math.abs(moment().diff(time, "days")) <= 2) {
       $(taskEl).addClass("list-group-item-warning");
     }  
+    console.log(taskEl)
 };
 
 // remove all tasks
@@ -204,16 +204,21 @@ $(".card .list-group").sortable({
   tolerance: "pointer",
   helper: "clone",
   activate: function(event) {
-    // console.log("activate", this);
+    $(this).addClass("dropover");
+    $(".bottom-trash").addClass("bottom-trash-drag");
+    console.log($(".bottom-trash"));
   },
   deactivate: function(event) {
-    // console.log("deactivate", this);
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
   },  
   over: function(event) {
-    // console.log("over", event.target);
+    $(event.target).addClass("dropover-active");
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event) {
-    // console.log("out", event.target);
+    $(event.target).removeClass("dropover-active");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   update: function(event) {
     //aray to store the task data in 
@@ -269,6 +274,14 @@ $("#trash").droppable({
     console.log("out");
   }
 })
+
+//timer function
+setInterval(function() {
+  $(".card .list-group-item").each(function(index, el) {
+    auditTask(el);
+  });
+}, (1000 * 60) * 30);
+
 
 // load tasks for the first time
 loadTasks();
